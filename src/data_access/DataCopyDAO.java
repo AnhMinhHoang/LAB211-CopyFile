@@ -61,6 +61,8 @@ public class DataCopyDAO {
     }
 
     public void createFileConfig(FileData data) {
+        System.out.println("File Config not found!");
+        System.out.println("---- Input Config File ----");
         data.setCopyFolder(valid.inputString("Copy Folder"));
         data.setDataType(valid.inputString("Data Type"));
         data.setPath(valid.inputString("Path"));
@@ -87,7 +89,11 @@ public class DataCopyDAO {
             data.setCopyFolder(prop.getProperty("COPY_FOLDER"));
             data.setDataType(prop.getProperty("DATA_TYPE"));
             data.setPath(prop.getProperty("PATH"));
-        } catch (IOException e) {
+            if (!checkFileConfig(data.getCopyFolder(), data.getPath())) {
+                System.out.println("System Shutdown...");
+                System.exit(0);
+            }
+        } catch (IOException | NullPointerException e) {
             createFileConfig(data);
         }
     }
@@ -112,15 +118,19 @@ public class DataCopyDAO {
         File f = new File(data.getCopyFolder());
         File[] files = f.listFiles();
         String[] str = data.getDataType().split("[^(\\.a-zA-Z)]|[\\..+\\..+]");
+        System.out.println("Copy is running...");
+        System.out.println("----------- File Name -----------");
         for (File file : files) {
             if (file.isFile() && checkPath(str, file.getName())) {
                 try {
                     File destination = new File(data.getPath(), file.getName());
+                    System.out.println(file.getName());
                     Files.copy(file.toPath(), destination.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+        System.out.println("Copy is finished...");
     }
 }

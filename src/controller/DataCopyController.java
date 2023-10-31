@@ -22,6 +22,7 @@ public class DataCopyController {
     }
 
     public void run() {
+        System.out.println("======= Copy Program =======");
         repo.dataCopy(data);
     }
 }
